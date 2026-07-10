@@ -1,35 +1,38 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
+import { useEffect, useState } from 'react';
+import type { JSX } from 'react';
+import type { UsagePayload } from '../../shared/types';
+import { Historico } from './tabs/Historico';
+import { AoVivo } from './tabs/AoVivo';
 
-function App(): React.JSX.Element {
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
+type Tab = 'ao-vivo' | 'historico';
+
+export function App(): JSX.Element {
+  const [payload, setPayload] = useState<UsagePayload | null>(null);
+  const [tab, setTab] = useState<Tab>('ao-vivo');
+
+  useEffect(() => {
+    return window.prismly.onUsageUpdate(setPayload);
+  }, []);
+
+  if (!payload) {
+    return <p>Carregando dados de uso...</p>;
+  }
+
+  if (payload.aggregated.totals.count === 0) {
+    return <p>Nenhum uso encontrado ainda.</p>;
+  }
 
   return (
-    <>
-      <img alt="logo" className="logo" src={electronLogo} />
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-        &nbsp;and <span className="ts">TypeScript</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
-        </div>
-        <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
-        </div>
-      </div>
-      <Versions></Versions>
-    </>
-  )
+    <div>
+      <nav>
+        <button onClick={() => setTab('ao-vivo')} disabled={tab === 'ao-vivo'}>
+          Ao vivo
+        </button>
+        <button onClick={() => setTab('historico')} disabled={tab === 'historico'}>
+          Histórico
+        </button>
+      </nav>
+      {tab === 'ao-vivo' ? <AoVivo blocks={payload.blocks} /> : <Historico aggregated={payload.aggregated} />}
+    </div>
+  );
 }
-
-export default App
