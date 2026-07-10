@@ -1,0 +1,11 @@
+{
+  "name": "prismly",
+  "version": "0.1.0",
+  "description": "Reads local AI coding assistant usage logs and computes token usage/cost.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "license": "UNLICENSED"
+}
