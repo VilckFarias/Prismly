@@ -1,6 +1,6 @@
-import { collectClaudeUsage } from './adapters/claude.js';
-import { calculateCost } from './pricing.js';
-import { aggregateUsage } from './aggregator.js';
+import { collectClaudeUsage } from './core/adapters/claude.js';
+import { calculateCost } from './core/pricing.js';
+import { aggregateUsage } from './core/aggregator.js';
 
 function formatNumber(n) {
   return n.toLocaleString('pt-BR');
