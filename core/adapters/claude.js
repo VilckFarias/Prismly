@@ -4,8 +4,16 @@ import { join, relative, sep } from 'node:path';
 
 const PROJECTS_DIR = join(homedir(), '.claude', 'projects');
 
-function findJsonlFiles(rootDir) {
-  return readdirSync(rootDir, { recursive: true, withFileTypes: true })
+export function findJsonlFiles(rootDir) {
+  let entries;
+  try {
+    entries = readdirSync(rootDir, { recursive: true, withFileTypes: true });
+  } catch (error) {
+    if (error.code === 'ENOENT') return [];
+    throw error;
+  }
+
+  return entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.jsonl'))
     .map((entry) => join(entry.parentPath, entry.name));
 }
