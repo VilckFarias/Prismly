@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { aggregateUsage } from './aggregator.js';
+import { aggregateUsage } from './aggregator.ts';
+import type { UsageRecord } from './types.ts';
 
-function makeRecord(overrides = {}) {
+function makeRecord(overrides: Partial<UsageRecord> = {}): UsageRecord {
   return {
     timestamp: '2026-07-09T10:00:00.000Z',
     model: 'claude-sonnet-5',
