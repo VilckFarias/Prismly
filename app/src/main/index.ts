@@ -1,11 +1,11 @@
 import { app, BrowserWindow } from 'electron';
 import { join } from 'node:path';
-import { collectClaudeUsage } from '../../../core/adapters/claude.js';
-import { calculateCost } from '../../../core/pricing.js';
-import { aggregateUsage } from '../../../core/aggregator.js';
-import { computeBlocks } from '../../../core/blocks.js';
+import { collectClaudeUsage } from '../../../core/adapters/claude';
+import { calculateCost } from '../../../core/pricing';
+import { aggregateUsage } from '../../../core/aggregator';
+import { computeBlocks } from '../../../core/blocks';
 import { startWatcher } from './watcher';
-import type { AggregatedUsage, SessionBlock, UsagePayload } from '../shared/types';
+import type { UsagePayload } from '../shared/types';
 
 function buildPayload(): UsagePayload {
   const records = collectClaudeUsage().map((record) => ({
@@ -14,11 +14,8 @@ function buildPayload(): UsagePayload {
   }));
 
   return {
-    aggregated: aggregateUsage(records) as AggregatedUsage,
-    // computeBlocks() always resolves `end` to a projected or real ISO string
-    // before returning (core/blocks.test.js covers both cases) — TS just
-    // can't see that through the untyped core/ boundary.
-    blocks: computeBlocks(records) as unknown as SessionBlock[],
+    aggregated: aggregateUsage(records),
+    blocks: computeBlocks(records),
   };
 }
 

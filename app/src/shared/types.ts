@@ -1,30 +1,6 @@
-export interface UsageBucket {
-  inputTokens: number;
-  outputTokens: number;
-  cacheCreationTokens: number;
-  cacheReadTokens: number;
-  cost: number;
-  count: number;
-}
+import type { AggregatedUsage, SessionBlock } from '../../../core/types';
 
-export interface AggregatedUsage {
-  byDay: Record<string, UsageBucket>;
-  byModel: Record<string, UsageBucket>;
-  byProject: Record<string, UsageBucket>;
-  totals: UsageBucket;
-}
-
-export interface SessionBlock {
-  start: string;
-  end: string;
-  isActive: boolean;
-  inputTokens: number;
-  outputTokens: number;
-  cacheCreationTokens: number;
-  cacheReadTokens: number;
-  cost: number;
-  count: number;
-}
+export type { UsageBucket, AggregatedUsage, SessionBlock } from '../../../core/types';
 
 export interface UsagePayload {
   aggregated: AggregatedUsage;
