@@ -1,8 +1,11 @@
 import { BrowserWindow } from 'electron';
 import { join } from 'node:path';
+import { savePosition } from './popupPosition';
 
 export const POPUP_WIDTH = 380;
 export const POPUP_HEIGHT = 500;
+
+const SAVE_POSITION_DEBOUNCE_MS = 300;
 
 export function createPopupWindow(): BrowserWindow {
   const popupWindow = new BrowserWindow({
@@ -27,6 +30,15 @@ export function createPopupWindow(): BrowserWindow {
 
   popupWindow.on('blur', () => {
     popupWindow.hide();
+  });
+
+  let saveTimeout: NodeJS.Timeout | null = null;
+  popupWindow.on('moved', () => {
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+      const [x, y] = popupWindow.getPosition();
+      savePosition(x, y);
+    }, SAVE_POSITION_DEBOUNCE_MS);
   });
 
   return popupWindow;
