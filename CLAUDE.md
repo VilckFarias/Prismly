@@ -2,13 +2,14 @@
 
 Ferramenta que lê os logs locais de uso de assistentes de IA de código (começando pelo Claude Code, com outros adaptadores futuros) e calcula tokens consumidos e custo em USD. Inspirada no `ccusage`, mas com código 100% autoral — não é fork nem depende do pacote `ccusage`.
 
-## Fase atual: base de dados
+## Fase atual: app gráfico
 
-Só a camada de dados: encontrar logs, processar, deduplicar e calcular custo corretamente. Sem dashboard ou interface ainda.
+A camada de dados (`core/`) está validada e estável. A fase atual adiciona um app Electron (`app/`) com visualização gráfica: uma aba "Ao vivo" com o bloco de sessão de 5h em andamento, e uma aba "Histórico" com os agregados por dia/modelo/projeto que já existiam no relatório de terminal. O modo CLI (`npm start`) continua existindo.
 
 ## Stack
 
-Node.js puro (v20+), ESM, zero dependências externas.
+- `core/` e o CLI (`index.ts`) — TypeScript, rodando nativamente no Node (v22.6+/24, via "type stripping" — sem build step, sem `ts-node`). Zero dependências externas em runtime; `@types/node` e `typescript` entram só como devDependencies, usadas exclusivamente para checagem de tipos (`npm run typecheck`).
+- `app/` — Electron + React + TypeScript, empacotado com `electron-vite`. Dependências isoladas em `app/package.json`; não afetam `core/`.
 
 ## Convenções
 
@@ -17,10 +18,10 @@ Node.js puro (v20+), ESM, zero dependências externas.
 
 ## Arquitetura
 
-- `adapters/claude.js` — varre recursivamente `~/.claude/projects/` procurando `.jsonl`, filtra entradas `type: "assistant"` (únicas com `usage`). Extrai `timestamp`, `model`, `sessionId` (vem no próprio JSON da linha) e os contadores de `usage`. O nome do projeto é derivado do nome da pasta em `~/.claude/projects/`, que é o path original "achatado" (`/` virou `-`). Essa codificação é **lossy** (caracteres acentuados são removidos, ex: "Área" vira dashes duplicados), então por enquanto usamos o nome da pasta como identificador bruto do projeto — decodificação bonita fica para depois.
-- `pricing.js` — tabela de preços por modelo (USD por 1M tokens: input/output/cache write 5m/cache write 1h/cache read) e função de cálculo de custo por registro.
-- `aggregator.js` — agrupa registros normalizados por dia, modelo e projeto, somando tokens e custo, mais totais gerais.
-- `index.js` — roda o pipeline completo e imprime no terminal para validação manual.
+- `core/adapters/claude.ts`, `core/aggregator.ts`, `core/pricing.ts` — mesma responsabilidade de antes, agora em TypeScript dentro de `core/`.
+- `core/blocks.ts` — agrupa registros normalizados em blocos de sessão de 5h (a janela de uso do Claude Code), expondo início/fim/status ativo e os totais acumulados de cada bloco. Usado pela aba "Ao vivo" do app.
+- `app/` — app Electron (processo principal + preload + renderer React/TS). O processo principal roda a pipeline de `core/`, observa `~/.claude/projects/` com `fs.watch` e envia atualizações ao renderer via IPC.
+- `core/types.ts` — fonte única dos tipos de domínio (`RawUsageRecord`, `UsageRecord`, `UsageBucket`, `AggregatedUsage`, `SessionBlock`). `app/src/shared/types.ts` importa daqui em vez de duplicar.
 
 ## Dedup e contagem de tokens (importante — bugs reais encontrados e corrigidos)
 

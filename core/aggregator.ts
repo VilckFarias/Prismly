@@ -1,4 +1,6 @@
-function createEmptyBucket() {
+import type { UsageRecord, UsageBucket, AggregatedUsage } from './types.ts';
+
+function createEmptyBucket(): UsageBucket {
   return {
     inputTokens: 0,
     outputTokens: 0,
@@ -9,7 +11,7 @@ function createEmptyBucket() {
   };
 }
 
-function addRecord(bucket, record) {
+function addRecord(bucket: UsageBucket, record: UsageRecord): void {
   bucket.inputTokens += record.inputTokens;
   bucket.outputTokens += record.outputTokens;
   bucket.cacheCreationTokens += record.cacheCreationTokens;
@@ -18,8 +20,11 @@ function addRecord(bucket, record) {
   bucket.count += 1;
 }
 
-function groupBy(records, keyFn) {
-  const groups = {};
+function groupBy(
+  records: UsageRecord[],
+  keyFn: (record: UsageRecord) => string,
+): Record<string, UsageBucket> {
+  const groups: Record<string, UsageBucket> = {};
   for (const record of records) {
     const key = keyFn(record);
     if (!groups[key]) groups[key] = createEmptyBucket();
@@ -28,7 +33,7 @@ function groupBy(records, keyFn) {
   return groups;
 }
 
-export function aggregateUsage(records) {
+export function aggregateUsage(records: UsageRecord[]): AggregatedUsage {
   const byDay = groupBy(records, (record) => record.timestamp.slice(0, 10));
   const byModel = groupBy(records, (record) => record.model);
   const byProject = groupBy(records, (record) => record.project);
