@@ -25,10 +25,20 @@ export function App(): JSX.Element {
   return (
     <div>
       <nav>
-        <button onClick={() => setTab('ao-vivo')} disabled={tab === 'ao-vivo'}>
+        <button
+          onClick={() => setTab('ao-vivo')}
+          disabled={tab === 'ao-vivo'}
+          aria-pressed={tab === 'ao-vivo'}
+          style={tab === 'ao-vivo' ? { fontWeight: 'bold', borderBottom: '2px solid #4f9eff' } : undefined}
+        >
           Ao vivo
         </button>
-        <button onClick={() => setTab('historico')} disabled={tab === 'historico'}>
+        <button
+          onClick={() => setTab('historico')}
+          disabled={tab === 'historico'}
+          aria-pressed={tab === 'historico'}
+          style={tab === 'historico' ? { fontWeight: 'bold', borderBottom: '2px solid #4f9eff' } : undefined}
+        >
           Histórico
         </button>
       </nav>
