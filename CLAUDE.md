@@ -8,7 +8,7 @@ A camada de dados (`core/`) está validada e estável. A fase atual adiciona um 
 
 ## Stack
 
-- `core/` — Node.js puro (v20+), ESM, zero dependências externas.
+- `core/` e o CLI (`index.ts`) — TypeScript, rodando nativamente no Node (v22.6+/24, via "type stripping" — sem build step, sem `ts-node`). Zero dependências externas em runtime; `@types/node` e `typescript` entram só como devDependencies, usadas exclusivamente para checagem de tipos (`npm run typecheck`).
 - `app/` — Electron + React + TypeScript, empacotado com `electron-vite`. Dependências isoladas em `app/package.json`; não afetam `core/`.
 
 ## Convenções
@@ -21,6 +21,7 @@ A camada de dados (`core/`) está validada e estável. A fase atual adiciona um 
 - `core/adapters/claude.js`, `core/aggregator.js`, `core/pricing.js` — mesma responsabilidade de antes, agora dentro de `core/`.
 - `core/blocks.js` — agrupa registros normalizados em blocos de sessão de 5h (a janela de uso do Claude Code), expondo início/fim/status ativo e os totais acumulados de cada bloco. Usado pela aba "Ao vivo" do app.
 - `app/` — app Electron (processo principal + preload + renderer React/TS). O processo principal roda a pipeline de `core/`, observa `~/.claude/projects/` com `fs.watch` e envia atualizações ao renderer via IPC.
+- `core/types.ts` — fonte única dos tipos de domínio (`RawUsageRecord`, `UsageRecord`, `UsageBucket`, `AggregatedUsage`, `SessionBlock`). `app/src/shared/types.ts` importa daqui em vez de duplicar.
 
 ## Dedup e contagem de tokens (importante — bugs reais encontrados e corrigidos)
 

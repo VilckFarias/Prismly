@@ -1,16 +1,21 @@
-import { collectClaudeUsage } from './core/adapters/claude.js';
-import { calculateCost } from './core/pricing.js';
-import { aggregateUsage } from './core/aggregator.js';
+import { collectClaudeUsage } from './core/adapters/claude.ts';
+import { calculateCost } from './core/pricing.ts';
+import { aggregateUsage } from './core/aggregator.ts';
+import type { UsageBucket } from './core/types.ts';
 
-function formatNumber(n) {
+function formatNumber(n: number): string {
   return n.toLocaleString('pt-BR');
 }
 
-function formatCost(n) {
+function formatCost(n: number): string {
   return `US$ ${n.toFixed(2)}`;
 }
 
-function toRows(groups, keyLabel, sortBy) {
+function toRows(
+  groups: Record<string, UsageBucket>,
+  keyLabel: string,
+  sortBy?: 'key' | 'cost',
+): Record<string, string | number>[] {
   const entries = Object.entries(groups);
 
   if (sortBy === 'key') {
@@ -30,7 +35,7 @@ function toRows(groups, keyLabel, sortBy) {
   }));
 }
 
-function run() {
+function run(): void {
   const records = collectClaudeUsage().map((record) => ({
     ...record,
     cost: calculateCost(record),

@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "description": "Reads local AI coding assistant usage logs and computes token usage/cost.",
   "type": "module",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js",
-    "test": "node --test core/**/*.test.js",
+    "start": "node index.ts",
+    "test": "node --test core/**/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "license": "UNLICENSED",
