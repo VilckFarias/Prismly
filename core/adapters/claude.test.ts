@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { findJsonlFiles } from './claude.js';
+import { findJsonlFiles } from './claude.ts';
 
 test('retorna array vazio quando o diretório não existe', () => {
   const result = findJsonlFiles('/caminho/que/nao/existe/prismly-test');

@@ -1,15 +1,16 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, type Dirent } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, relative, sep } from 'node:path';
+import type { RawUsageRecord } from '../types.ts';
 
 const PROJECTS_DIR = join(homedir(), '.claude', 'projects');
 
-export function findJsonlFiles(rootDir) {
-  let entries;
+export function findJsonlFiles(rootDir: string): string[] {
+  let entries: Dirent[];
   try {
     entries = readdirSync(rootDir, { recursive: true, withFileTypes: true });
   } catch (error) {
-    if (error.code === 'ENOENT') return [];
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
     throw error;
   }
 
@@ -18,13 +19,33 @@ export function findJsonlFiles(rootDir) {
     .map((entry) => join(entry.parentPath, entry.name));
 }
 
-function getProjectName(filePath) {
+function getProjectName(filePath: string): string {
   return relative(PROJECTS_DIR, filePath).split(sep)[0];
 }
 
-function parseLine(line) {
+interface ClaudeLogEntry {
+  type?: string;
+  timestamp?: string;
+  sessionId?: string;
+  message?: {
+    id?: string;
+    model?: string;
+    usage?: {
+      input_tokens?: number;
+      output_tokens?: number;
+      cache_creation_input_tokens?: number;
+      cache_read_input_tokens?: number;
+      cache_creation?: {
+        ephemeral_5m_input_tokens?: number;
+        ephemeral_1h_input_tokens?: number;
+      };
+    };
+  };
+}
+
+function parseLine(line: string): ClaudeLogEntry | null {
   try {
-    return JSON.parse(line);
+    return JSON.parse(line) as ClaudeLogEntry;
   } catch {
     return null;
   }
@@ -39,8 +60,8 @@ function parseLine(line) {
 // Duplicates also show up across different session files (resumed/forked
 // sessions carry over prior history), so this must be tracked globally
 // across every file processed, not per file.
-export function collectClaudeUsage() {
-  const recordsByMessageId = new Map();
+export function collectClaudeUsage(): RawUsageRecord[] {
+  const recordsByMessageId = new Map<string, RawUsageRecord>();
 
   for (const filePath of findJsonlFiles(PROJECTS_DIR)) {
     const project = getProjectName(filePath);
@@ -63,10 +84,10 @@ export function collectClaudeUsage() {
 
       recordsByMessageId.set(messageId, {
         source: 'claude',
-        timestamp: entry.timestamp,
-        model: entry.message.model,
+        timestamp: entry.timestamp ?? '',
+        model: entry.message?.model ?? '',
         project,
-        sessionId: entry.sessionId,
+        sessionId: entry.sessionId ?? '',
         inputTokens: usage.input_tokens ?? 0,
         outputTokens: usage.output_tokens ?? 0,
         cacheCreationTokens: cacheCreation5mTokens + cacheCreation1hTokens,
