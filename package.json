@@ -6,7 +6,12 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node --test core/**/*.test.js"
+    "test": "node --test core/**/*.test.js",
+    "typecheck": "tsc --noEmit"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.7.0"
+  }
 }
