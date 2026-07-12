@@ -1,5 +1,22 @@
+interface PricedRecord {
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+  cacheCreation5mTokens: number;
+  cacheCreation1hTokens: number;
+  cacheReadTokens: number;
+}
+
+interface ModelPricing {
+  input: number;
+  cacheWrite5m: number;
+  cacheWrite1h: number;
+  cacheRead: number;
+  output: number;
+}
+
 // USD per 1M tokens, sourced from https://platform.claude.com/docs/en/docs/about-claude/pricing
-export const MODEL_PRICING = {
+export const MODEL_PRICING: Record<string, ModelPricing> = {
   'claude-sonnet-5': { input: 2, cacheWrite5m: 2.5, cacheWrite1h: 4, cacheRead: 0.2, output: 10 },
   'claude-sonnet-4-6': { input: 3, cacheWrite5m: 3.75, cacheWrite1h: 6, cacheRead: 0.3, output: 15 },
   'claude-opus-4-8': { input: 5, cacheWrite5m: 6.25, cacheWrite1h: 10, cacheRead: 0.5, output: 25 },
@@ -9,7 +26,7 @@ export const MODEL_PRICING = {
 
 const TOKENS_PER_MILLION = 1_000_000;
 
-export function calculateCost(record) {
+export function calculateCost(record: PricedRecord): number {
   const pricing = MODEL_PRICING[record.model];
   if (!pricing) return 0;
 

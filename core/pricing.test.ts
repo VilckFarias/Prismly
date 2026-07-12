@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateCost } from './pricing.js';
+import { calculateCost } from './pricing.ts';
 
 test('calcula o custo somando cada faixa de preço do modelo', () => {
   const record = {
