@@ -22,8 +22,19 @@ export function App(): JSX.Element {
     return <p>Nenhum uso encontrado ainda.</p>;
   }
 
+  const dragHandleStyle = {
+    height: 24,
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: 12,
+    fontSize: 12,
+    color: '#999',
+    WebkitAppRegion: 'drag',
+  } as const;
+
   return (
     <div>
+      <div style={dragHandleStyle}>Prismly</div>
       <nav>
         <button
           onClick={() => setTab('ao-vivo')}
