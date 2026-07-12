@@ -1,17 +1,23 @@
+import type { UsageRecord, SessionBlock } from './types.ts';
+
 const BLOCK_DURATION_MS = 5 * 60 * 60 * 1000;
 
-function floorToHour(date) {
+interface BlockInProgress extends SessionBlock {
+  lastActivity: string;
+}
+
+function floorToHour(date: Date): Date {
   const floored = new Date(date.getTime());
   floored.setUTCMinutes(0, 0, 0);
   return floored;
 }
 
-function createBlock(startTime) {
+function createBlock(startTime: Date): BlockInProgress {
   return {
     start: floorToHour(startTime).toISOString(),
     lastActivity: startTime.toISOString(),
     isActive: false,
-    end: null,
+    end: '',
     inputTokens: 0,
     outputTokens: 0,
     cacheCreationTokens: 0,
@@ -21,7 +27,7 @@ function createBlock(startTime) {
   };
 }
 
-function addToBlock(block, record, recordTime) {
+function addToBlock(block: BlockInProgress, record: UsageRecord, recordTime: Date): void {
   block.inputTokens += record.inputTokens;
   block.outputTokens += record.outputTokens;
   block.cacheCreationTokens += record.cacheCreationTokens;
@@ -38,27 +44,30 @@ function addToBlock(block, record, recordTime) {
 // contínuo. As duas condições são checadas separadamente porque cobrem
 // situações diferentes: uso esporádico com buracos grandes vs. uso contínuo
 // que estoura a janela.
-export function computeBlocks(records, { now = new Date(), blockDurationMs = BLOCK_DURATION_MS } = {}) {
+export function computeBlocks(
+  records: UsageRecord[],
+  { now = new Date(), blockDurationMs = BLOCK_DURATION_MS }: { now?: Date; blockDurationMs?: number } = {},
+): SessionBlock[] {
   if (records.length === 0) return [];
 
   const sorted = [...records].sort(
     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
   );
 
-  const blocks = [];
-  let currentBlock = null;
+  const blocks: BlockInProgress[] = [];
+  let currentBlock: BlockInProgress | null = null;
 
   for (const record of sorted) {
     const recordTime = new Date(record.timestamp);
 
     const blockExpired =
-      currentBlock &&
+      currentBlock !== null &&
       recordTime.getTime() - new Date(currentBlock.start).getTime() >= blockDurationMs;
     const gapExceeded =
-      currentBlock &&
+      currentBlock !== null &&
       recordTime.getTime() - new Date(currentBlock.lastActivity).getTime() >= blockDurationMs;
 
-    if (!currentBlock || blockExpired || gapExceeded) {
+    if (currentBlock === null || blockExpired || gapExceeded) {
       currentBlock = createBlock(recordTime);
       blocks.push(currentBlock);
     }
@@ -73,8 +82,7 @@ export function computeBlocks(records, { now = new Date(), blockDurationMs = BLO
     block.end = block.isActive
       ? new Date(startMs + blockDurationMs).toISOString()
       : block.lastActivity;
-    delete block.lastActivity;
   }
 
-  return blocks;
+  return blocks.map(({ lastActivity, ...rest }) => rest);
 }

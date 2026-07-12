@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { computeBlocks } from './blocks.js';
+import { computeBlocks } from './blocks.ts';
+import type { UsageRecord } from './types.ts';
 
-function makeRecord(timestamp, overrides = {}) {
+function makeRecord(timestamp: string, overrides: Partial<UsageRecord> = {}): UsageRecord {
   return {
     timestamp,
     model: 'claude-sonnet-5',
