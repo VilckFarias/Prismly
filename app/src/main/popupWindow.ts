@@ -1,0 +1,33 @@
+import { BrowserWindow } from 'electron';
+import { join } from 'node:path';
+
+export const POPUP_WIDTH = 380;
+export const POPUP_HEIGHT = 500;
+
+export function createPopupWindow(): BrowserWindow {
+  const popupWindow = new BrowserWindow({
+    width: POPUP_WIDTH,
+    height: POPUP_HEIGHT,
+    show: false,
+    frame: false,
+    resizable: false,
+    skipTaskbar: true,
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+
+  if (process.env['ELECTRON_RENDERER_URL']) {
+    popupWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
+  } else {
+    popupWindow.loadFile(join(__dirname, '../renderer/index.html'));
+  }
+
+  popupWindow.on('blur', () => {
+    popupWindow.hide();
+  });
+
+  return popupWindow;
+}
