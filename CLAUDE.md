@@ -18,8 +18,8 @@ A camada de dados (`core/`) está validada e estável. A fase atual adiciona um 
 
 ## Arquitetura
 
-- `core/adapters/claude.js`, `core/aggregator.js`, `core/pricing.js` — mesma responsabilidade de antes, agora dentro de `core/`.
-- `core/blocks.js` — agrupa registros normalizados em blocos de sessão de 5h (a janela de uso do Claude Code), expondo início/fim/status ativo e os totais acumulados de cada bloco. Usado pela aba "Ao vivo" do app.
+- `core/adapters/claude.ts`, `core/aggregator.ts`, `core/pricing.ts` — mesma responsabilidade de antes, agora em TypeScript dentro de `core/`.
+- `core/blocks.ts` — agrupa registros normalizados em blocos de sessão de 5h (a janela de uso do Claude Code), expondo início/fim/status ativo e os totais acumulados de cada bloco. Usado pela aba "Ao vivo" do app.
 - `app/` — app Electron (processo principal + preload + renderer React/TS). O processo principal roda a pipeline de `core/`, observa `~/.claude/projects/` com `fs.watch` e envia atualizações ao renderer via IPC.
 - `core/types.ts` — fonte única dos tipos de domínio (`RawUsageRecord`, `UsageRecord`, `UsageBucket`, `AggregatedUsage`, `SessionBlock`). `app/src/shared/types.ts` importa daqui em vez de duplicar.
 
