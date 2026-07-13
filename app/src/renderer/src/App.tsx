@@ -50,13 +50,20 @@ export function App(): JSX.Element {
   const [payload, setPayload] = useState<UsagePayload | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [view, setView] = useState<View>('ao-vivo');
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     return window.prismly.onUsageUpdate((newPayload) => {
       setPayload(newPayload);
       setLastUpdated(new Date());
+      setRefreshing(false);
     });
   }, []);
+
+  const handleRefresh = (): void => {
+    setRefreshing(true);
+    window.prismly.refresh();
+  };
 
   if (!payload) {
     return <p>Carregando dados de uso...</p>;
@@ -107,7 +114,8 @@ export function App(): JSX.Element {
             blocks={payload.blocks}
             today={today}
             lastUpdated={lastUpdated}
-            onRefresh={() => window.prismly.refresh()}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
           />
         )}
         {view === 'historico' && <Historico aggregated={payload.aggregated} />}

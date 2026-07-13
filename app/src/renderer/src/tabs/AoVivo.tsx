@@ -34,10 +34,11 @@ interface AoVivoProps {
   blocks: SessionBlock[];
   today: UsageBucket | undefined;
   lastUpdated: Date | null;
+  refreshing: boolean;
   onRefresh: () => void;
 }
 
-export function AoVivo({ blocks, today, lastUpdated, onRefresh }: AoVivoProps): JSX.Element {
+export function AoVivo({ blocks, today, lastUpdated, refreshing, onRefresh }: AoVivoProps): JSX.Element {
   const activeBlock = blocks.find((block) => block.isActive) ?? null;
 
   return (
@@ -79,9 +80,16 @@ export function AoVivo({ blocks, today, lastUpdated, onRefresh }: AoVivoProps): 
         </span>
         <button
           onClick={onRefresh}
-          style={{ background: 'none', border: 'none', color: '#4f9eff', fontSize: 12, cursor: 'pointer' }}
+          disabled={refreshing}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: refreshing ? '#666' : '#4f9eff',
+            fontSize: 12,
+            cursor: refreshing ? 'default' : 'pointer',
+          }}
         >
-          ↻ Atualizar
+          {refreshing ? '↻ Atualizando...' : '↻ Atualizar'}
         </button>
       </div>
     </section>
