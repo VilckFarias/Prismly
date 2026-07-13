@@ -8,4 +8,10 @@ contextBridge.exposeInMainWorld('prismly', {
     ipcRenderer.on('usage:update', listener);
     return () => ipcRenderer.removeListener('usage:update', listener);
   },
+  hidePopup(): void {
+    ipcRenderer.send('popup:hide');
+  },
+  refresh(): void {
+    ipcRenderer.send('usage:refresh');
+  },
 });
