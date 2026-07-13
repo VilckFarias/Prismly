@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, Tray } from 'electron';
 import { join } from 'node:path';
 import { POPUP_HEIGHT, POPUP_WIDTH } from './popupWindow';
-import { clearPosition, isPositionOnScreen, loadPosition } from './popupPosition';
+import { clearGeometry, isPositionOnScreen, loadGeometry } from './popupGeometry';
 
 function anchorAboveTray(popupWindow: BrowserWindow, tray: Tray): void {
   const trayBounds = tray.getBounds();
@@ -11,7 +11,7 @@ function anchorAboveTray(popupWindow: BrowserWindow, tray: Tray): void {
 }
 
 function positionPopup(popupWindow: BrowserWindow, tray: Tray): void {
-  const saved = loadPosition();
+  const saved = loadGeometry();
   if (saved && isPositionOnScreen(saved.x, saved.y)) {
     popupWindow.setPosition(saved.x, saved.y, false);
     return;
@@ -31,9 +31,10 @@ function togglePopup(popupWindow: BrowserWindow, tray: Tray): void {
   popupWindow.focus();
 }
 
-function resetPosition(popupWindow: BrowserWindow, tray: Tray): void {
-  clearPosition();
+function resetWindow(popupWindow: BrowserWindow, tray: Tray): void {
+  clearGeometry();
   if (popupWindow.isVisible()) {
+    popupWindow.setSize(POPUP_WIDTH, POPUP_HEIGHT);
     anchorAboveTray(popupWindow, tray);
   }
 }
@@ -45,7 +46,7 @@ export function createTray(popupWindow: BrowserWindow): Tray {
   tray.on('click', () => togglePopup(popupWindow, tray));
 
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Redefinir posição', click: () => resetPosition(popupWindow, tray) },
+    { label: 'Redefinir janela', click: () => resetWindow(popupWindow, tray) },
     { label: 'Sair', click: () => app.quit() },
   ]);
   tray.setContextMenu(contextMenu);
