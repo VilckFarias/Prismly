@@ -5,3 +5,4 @@ app/out/
 *.log
 *.tsbuildinfo
 .DS_Store
+.superpowers/
