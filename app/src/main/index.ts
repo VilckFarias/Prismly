@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray } from 'electron';
+import { app, BrowserWindow, ipcMain, Tray } from 'electron';
 import { collectClaudeUsage } from '../../../core/adapters/claude';
 import { calculateCost } from '../../../core/pricing';
 import { aggregateUsage } from '../../../core/aggregator';
@@ -34,4 +34,12 @@ app.whenReady().then(() => {
   tray = createTray(popupWindow);
   void tray;
   startWatcher(sendUpdate);
+
+  ipcMain.on('popup:hide', () => {
+    popupWindow?.hide();
+  });
+
+  ipcMain.on('usage:refresh', () => {
+    sendUpdate();
+  });
 });
