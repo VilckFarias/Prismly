@@ -6,7 +6,8 @@ import { computeBlocks } from '../../../core/blocks';
 import { startWatcher } from './watcher';
 import { createPopupWindow } from './popupWindow';
 import { createTray } from './tray';
-import type { UsagePayload } from '../shared/types';
+import { loadTheme, saveTheme } from './themeSettings';
+import type { SavedTheme, UsagePayload } from '../shared/types';
 
 function buildPayload(): UsagePayload {
   const records = collectClaudeUsage().map((record) => ({
@@ -47,5 +48,11 @@ app.whenReady().then(() => {
 
   ipcMain.on('usage:refresh', () => {
     sendUpdate();
+  });
+
+  ipcMain.handle('theme:get', () => loadTheme());
+
+  ipcMain.on('theme:set', (_event, theme: SavedTheme) => {
+    saveTheme(theme);
   });
 });

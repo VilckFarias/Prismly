@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { UsagePayload } from '../shared/types';
+import type { SavedTheme, UsagePayload } from '../shared/types';
 
 contextBridge.exposeInMainWorld('prismly', {
   onUsageUpdate(callback: (payload: UsagePayload) => void): () => void {
@@ -13,5 +13,11 @@ contextBridge.exposeInMainWorld('prismly', {
   },
   refresh(): void {
     ipcRenderer.send('usage:refresh');
+  },
+  getTheme(): Promise<SavedTheme> {
+    return ipcRenderer.invoke('theme:get');
+  },
+  setTheme(theme: SavedTheme): void {
+    ipcRenderer.send('theme:set', theme);
   },
 });
