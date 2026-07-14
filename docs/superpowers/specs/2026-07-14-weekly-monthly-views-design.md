@@ -24,8 +24,14 @@ function mondayKey(timestamp: string): string {
   const day = date.getDay(); // 0 = domingo, 1 = segunda, ..., 6 = sábado
   const diffToMonday = day === 0 ? -6 : 1 - day;
   date.setDate(date.getDate() + diffToMonday);
-  return date.toISOString().slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const dayOfMonth = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${dayOfMonth}`;
 }
+```
+
+(Using local-time getters end-to-end — `getFullYear`/`getMonth`/`getDate` — rather than `toISOString()`, which converts to UTC and could shift the date by a day depending on the machine's timezone. `byDay` and `byMonth` never do any timezone conversion at all — pure string slicing — so this keeps `byWeek` consistent with that same "no timezone math" spirit instead of introducing a UTC round-trip.)
 
 export function aggregateUsage(records: UsageRecord[]): AggregatedUsage {
   const byDay = groupBy(records, (record) => record.timestamp.slice(0, 10));
