@@ -13,9 +13,11 @@ Esta feature implementa a primeira versão da tela de Configuração: escolha de
 - **Aplicação:** ao vivo, sem botão "Salvar" separado — clicar num preset ou mexer num seletor de cor já aplica na tela e já persiste.
 - **Presets** (8 no total, incluindo Personalizado):
 
+Todas as cores usam hex sólido de 6 dígitos (`#rrggbb`) em todos os presets — nunca `rgba(...)` — porque o seletor `<input type="color">` do modo Personalizado só aceita esse formato; um valor `rgba` no tema atual faria o navegador zerar o campo de cor silenciosamente ao abrir Personalizado.
+
 | Nome | Fundo (`bg`) | Texto (`text`) | Fundo do card (`cardBg`) |
 |---|---|---|---|
-| Escuro (padrão) | `#1b1b1f` | `rgba(255,255,245,0.86)` | `#242424` |
+| Escuro (padrão) | `#1b1b1f` | `#dfdfd7` | `#242424` |
 | Escuro Azulado | `#10131c` | `#dce6f5` | `#1c2536` |
 | Escuro Verde | `#0d1410` | `#b9f6ca` | `#16241a` |
 | Meia-noite | `#14102a` | `#e4defa` | `#221c3d` |
@@ -48,7 +50,7 @@ export interface SavedTheme {
 
 const DEFAULT_THEME: SavedTheme = {
   preset: 'escuro',
-  colors: { bg: '#1b1b1f', text: 'rgba(255,255,245,0.86)', cardBg: '#242424' },
+  colors: { bg: '#1b1b1f', text: '#dfdfd7', cardBg: '#242424' },
 };
 
 function getThemeFilePath(): string {
