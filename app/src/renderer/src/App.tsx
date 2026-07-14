@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties, JSX } from 'react';
-import type { UsageBucket, UsagePayload } from '../../shared/types';
+import type { SavedTheme, UsageBucket, UsagePayload } from '../../shared/types';
 import { Historico } from './tabs/Historico';
 import { AoVivo } from './tabs/AoVivo';
+import { Configuracao } from './tabs/Configuracao';
+import { applyTheme } from './themes';
 
 type View = 'ao-vivo' | 'historico' | 'configuracao';
 
@@ -51,6 +53,7 @@ export function App(): JSX.Element {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [view, setView] = useState<View>('ao-vivo');
   const [refreshing, setRefreshing] = useState(false);
+  const [theme, setThemeState] = useState<SavedTheme | null>(null);
 
   useEffect(() => {
     return window.prismly.onUsageUpdate((newPayload) => {
@@ -60,9 +63,22 @@ export function App(): JSX.Element {
     });
   }, []);
 
+  useEffect(() => {
+    window.prismly.getTheme().then((savedTheme) => {
+      applyTheme(savedTheme.colors);
+      setThemeState(savedTheme);
+    });
+  }, []);
+
   const handleRefresh = (): void => {
     setRefreshing(true);
     window.prismly.refresh();
+  };
+
+  const handleThemeChange = (newTheme: SavedTheme): void => {
+    applyTheme(newTheme.colors);
+    window.prismly.setTheme(newTheme);
+    setThemeState(newTheme);
   };
 
   if (!payload) {
@@ -104,7 +120,11 @@ export function App(): JSX.Element {
         >
           Histórico
         </button>
-        <button disabled style={navButtonStyle(false, true)}>
+        <button
+          onClick={() => setView('configuracao')}
+          disabled={view === 'configuracao'}
+          style={navButtonStyle(view === 'configuracao', false)}
+        >
           Configuração
         </button>
       </nav>
@@ -119,6 +139,9 @@ export function App(): JSX.Element {
           />
         )}
         {view === 'historico' && <Historico aggregated={payload.aggregated} />}
+        {view === 'configuracao' && theme && (
+          <Configuracao currentTheme={theme} onThemeChange={handleThemeChange} />
+        )}
       </div>
     </div>
   );
