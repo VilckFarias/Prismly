@@ -1,12 +1,21 @@
-import { app, BrowserWindow, Menu, Tray } from 'electron';
+import { app, BrowserWindow, Menu, screen, Tray } from 'electron';
 import { join } from 'node:path';
 import { POPUP_HEIGHT, POPUP_WIDTH } from './popupWindow';
 import { clearGeometry, isPositionOnScreen, loadGeometry } from './popupGeometry';
+import { computeAboveTrayPosition, computeFallbackPosition, isValidTrayBounds } from './trayPositioning';
+
+const FALLBACK_EDGE_MARGIN = 12;
 
 function anchorAboveTray(popupWindow: BrowserWindow, tray: Tray): void {
   const trayBounds = tray.getBounds();
-  const x = Math.round(trayBounds.x + trayBounds.width / 2 - POPUP_WIDTH / 2);
-  const y = Math.round(trayBounds.y - POPUP_HEIGHT);
+  const { x, y } = isValidTrayBounds(trayBounds)
+    ? computeAboveTrayPosition(trayBounds, POPUP_WIDTH, POPUP_HEIGHT)
+    : computeFallbackPosition(
+        screen.getPrimaryDisplay().workArea,
+        POPUP_WIDTH,
+        POPUP_HEIGHT,
+        FALLBACK_EDGE_MARGIN,
+      );
   popupWindow.setPosition(x, y, false);
 }
 

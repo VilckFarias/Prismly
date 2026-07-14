@@ -29,6 +29,12 @@ function sendUpdate(): void {
 }
 
 app.whenReady().then(() => {
+  if (process.platform === 'linux') {
+    console.warn(
+      'No GNOME, o ícone da bandeja só aparece com a extensão AppIndicator/KStatusNotifierItem instalada. Veja o README.',
+    );
+  }
+
   popupWindow = createPopupWindow();
   popupWindow.webContents.on('did-finish-load', sendUpdate);
   tray = createTray(popupWindow);
