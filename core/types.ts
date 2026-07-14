@@ -34,6 +34,8 @@ export interface UsageBucket {
 
 export interface AggregatedUsage {
   byDay: Record<string, UsageBucket>;
+  byWeek: Record<string, UsageBucket>;
+  byMonth: Record<string, UsageBucket>;
   byModel: Record<string, UsageBucket>;
   byProject: Record<string, UsageBucket>;
   totals: UsageBucket;
