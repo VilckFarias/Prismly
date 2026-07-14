@@ -457,7 +457,9 @@ appImage:
 - [ ] **Step 2: Build the AppImage to verify the config is valid**
 
 Run: `cd app && npm run build:linux`
-Expected: PASS — build completes without error, producing `app/dist/prismly-1.0.0.AppImage` (electron-builder can cross-build a Linux target from Windows since it doesn't need to execute the binary, only package it)
+Expected: PASS — build completes without error, producing `app/dist/prismly-1.0.0.AppImage`
+
+**Update (post-implementation):** this expectation turned out to be wrong. electron-builder cannot assemble an AppImage on Windows — the final packaging step calls `fs.symlink()` unconditionally, which Windows blocks without admin/Developer Mode, and this is a documented upstream limitation (no config/env workaround exists). In practice, `electron-vite build` and the Linux packaging stage (`app/dist/linux-unpacked/`) complete successfully and confirm the YAML config is valid; only the final `.AppImage` assembly fails with `EPERM`. Producing and testing the actual `.AppImage` artifact requires Linux, WSL2, Docker, or a CI runner (e.g. GitHub Actions `ubuntu-latest`) — accepted and deferred to the "Manual verification" section below.
 
 - [ ] **Step 3: Commit**
 
