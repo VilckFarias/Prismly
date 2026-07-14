@@ -10,6 +10,25 @@ function formatCost(n: number): string {
   return `US$ ${n.toFixed(2)}`;
 }
 
+function formatWeekLabel(mondayKey: string): string {
+  const monday = new Date(mondayKey + 'T00:00:00');
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const fmt = (d: Date): string =>
+    `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+  return `${fmt(monday)} - ${fmt(sunday)}`;
+}
+
+const MONTH_NAMES = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+];
+
+function formatMonthLabel(monthKey: string): string {
+  const [year, month] = monthKey.split('-');
+  return `${MONTH_NAMES[Number(month) - 1]}/${year}`;
+}
+
 function CardList({ title, rows }: { title: string; rows: [string, UsageBucket][] }): JSX.Element {
   return (
     <section>
@@ -62,6 +81,12 @@ export function Historico({ aggregated }: { aggregated: AggregatedUsage }): JSX.
   const [granularity, setGranularity] = useState<Granularity>('dia');
 
   const byDayRows = Object.entries(aggregated.byDay).sort(([a], [b]) => a.localeCompare(b));
+  const byWeekRows: [string, UsageBucket][] = Object.entries(aggregated.byWeek)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, bucket]) => [formatWeekLabel(key), bucket]);
+  const byMonthRows: [string, UsageBucket][] = Object.entries(aggregated.byMonth)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, bucket]) => [formatMonthLabel(key), bucket]);
   const byModelRows = Object.entries(aggregated.byModel).sort(([, a], [, b]) => b.cost - a.cost);
   const byProjectRows = Object.entries(aggregated.byProject).sort(([, a], [, b]) => b.cost - a.cost);
 
@@ -75,21 +100,27 @@ export function Historico({ aggregated }: { aggregated: AggregatedUsage }): JSX.
         >
           Dia
         </button>
-        <button disabled style={pillStyle(false, true)}>
+        <button
+          onClick={() => setGranularity('semana')}
+          disabled={granularity === 'semana'}
+          style={pillStyle(granularity === 'semana', false)}
+        >
           Semana
         </button>
-        <button disabled style={pillStyle(false, true)}>
+        <button
+          onClick={() => setGranularity('mensal')}
+          disabled={granularity === 'mensal'}
+          style={pillStyle(granularity === 'mensal', false)}
+        >
           Mensal
         </button>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px 12px' }}>
-        {granularity === 'dia' && (
-          <>
-            <CardList title="Por dia" rows={byDayRows} />
-            <CardList title="Por modelo" rows={byModelRows} />
-            <CardList title="Por projeto" rows={byProjectRows} />
-          </>
-        )}
+        {granularity === 'dia' && <CardList title="Por dia" rows={byDayRows} />}
+        {granularity === 'semana' && <CardList title="Por semana" rows={byWeekRows} />}
+        {granularity === 'mensal' && <CardList title="Por mês" rows={byMonthRows} />}
+        <CardList title="Por modelo" rows={byModelRows} />
+        <CardList title="Por projeto" rows={byProjectRows} />
       </div>
     </div>
   );
