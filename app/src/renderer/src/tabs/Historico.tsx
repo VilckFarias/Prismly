@@ -35,7 +35,7 @@ function CardList({ title, rows }: { title: string; rows: [string, UsageBucket][
       <h2>{title}</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {rows.map(([key, bucket]) => (
-          <div key={key} style={{ background: '#242424', borderRadius: 8, padding: '10px 12px' }}>
+          <div key={key} style={{ background: 'var(--theme-card-bg)', borderRadius: 8, padding: '10px 12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <strong>{key}</strong>
               <span style={{ color: '#4f9eff', fontWeight: 'bold' }}>{formatCost(bucket.cost)}</span>

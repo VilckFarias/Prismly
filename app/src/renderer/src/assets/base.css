@@ -24,11 +24,15 @@
 }
 
 :root {
-  --color-background: var(--ev-c-black);
+  --theme-bg: #1b1b1f;
+  --theme-text: #dfdfd7;
+  --theme-card-bg: #242424;
+
+  --color-background: var(--theme-bg);
   --color-background-soft: var(--ev-c-black-soft);
   --color-background-mute: var(--ev-c-black-mute);
 
-  --color-text: var(--ev-c-text-1);
+  --color-text: var(--theme-text);
 }
 
 *,
