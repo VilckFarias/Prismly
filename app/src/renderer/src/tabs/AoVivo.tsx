@@ -1,12 +1,9 @@
 import type { JSX } from 'react';
-import type { SessionBlock, UsageBucket } from '../../../shared/types';
+import type { CurrencySettings, SessionBlock, UsageBucket } from '../../../shared/types';
+import { formatCost } from '../currency';
 
 function formatNumber(n: number): string {
   return n.toLocaleString('pt-BR');
-}
-
-function formatCost(n: number): string {
-  return `US$ ${n.toFixed(2)}`;
 }
 
 function formatTime(date: Date): string {
@@ -36,9 +33,10 @@ interface AoVivoProps {
   lastUpdated: Date | null;
   refreshing: boolean;
   onRefresh: () => void;
+  currency: CurrencySettings;
 }
 
-export function AoVivo({ blocks, today, lastUpdated, refreshing, onRefresh }: AoVivoProps): JSX.Element {
+export function AoVivo({ blocks, today, lastUpdated, refreshing, onRefresh, currency }: AoVivoProps): JSX.Element {
   const activeBlock = blocks.find((block) => block.isActive) ?? null;
 
   return (
@@ -60,7 +58,7 @@ export function AoVivo({ blocks, today, lastUpdated, refreshing, onRefresh }: Ao
             />
           </div>
           <div style={{ fontSize: 12, color: '#bbb' }}>
-            {formatCost(activeBlock.cost)} · {formatNumber(activeBlock.inputTokens + activeBlock.outputTokens)} tokens
+            {formatCost(activeBlock.cost, currency)} · {formatNumber(activeBlock.inputTokens + activeBlock.outputTokens)} tokens
             · {activeBlock.count} registros
           </div>
         </>
@@ -70,7 +68,7 @@ export function AoVivo({ blocks, today, lastUpdated, refreshing, onRefresh }: Ao
 
       {today && (
         <div style={{ marginTop: 14, fontSize: 12, color: '#999' }}>
-          Hoje: {formatCost(today.cost)} · {today.count} registros
+          Hoje: {formatCost(today.cost, currency)} · {today.count} registros
         </div>
       )}
 

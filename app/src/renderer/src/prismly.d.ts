@@ -1,4 +1,4 @@
-import type { UsagePayload } from '../../shared/types';
+import type { CurrencySettings, SavedTheme, UsagePayload } from '../../shared/types';
 
 declare global {
   interface Window {
@@ -6,6 +6,10 @@ declare global {
       onUsageUpdate(callback: (payload: UsagePayload) => void): () => void;
       hidePopup(): void;
       refresh(): void;
+      getTheme(): Promise<SavedTheme>;
+      setTheme(theme: SavedTheme): void;
+      getCurrency(): Promise<CurrencySettings>;
+      setCurrency(selected: CurrencySettings['selected']): void;
     };
   }
 }
