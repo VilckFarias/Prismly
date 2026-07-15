@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties, JSX } from 'react';
-import type { SavedTheme, UsageBucket, UsagePayload } from '../../shared/types';
+import type { CurrencySettings, SavedTheme, UsageBucket, UsagePayload } from '../../shared/types';
 import { Historico } from './tabs/Historico';
 import { AoVivo } from './tabs/AoVivo';
 import { Configuracao } from './tabs/Configuracao';
@@ -54,6 +54,7 @@ export function App(): JSX.Element {
   const [view, setView] = useState<View>('ao-vivo');
   const [refreshing, setRefreshing] = useState(false);
   const [theme, setThemeState] = useState<SavedTheme | null>(null);
+  const [currency, setCurrencyState] = useState<CurrencySettings | null>(null);
 
   useEffect(() => {
     return window.prismly.onUsageUpdate((newPayload) => {
@@ -70,6 +71,12 @@ export function App(): JSX.Element {
     });
   }, []);
 
+  useEffect(() => {
+    window.prismly.getCurrency().then((savedCurrency) => {
+      setCurrencyState(savedCurrency);
+    });
+  }, []);
+
   const handleRefresh = (): void => {
     setRefreshing(true);
     window.prismly.refresh();
@@ -79,6 +86,12 @@ export function App(): JSX.Element {
     applyTheme(newTheme.colors);
     window.prismly.setTheme(newTheme);
     setThemeState(newTheme);
+  };
+
+  const handleCurrencyChange = (selected: CurrencySettings['selected']): void => {
+    if (!currency) return;
+    window.prismly.setCurrency(selected);
+    setCurrencyState({ ...currency, selected });
   };
 
   if (!payload) {
@@ -129,18 +142,26 @@ export function App(): JSX.Element {
         </button>
       </nav>
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {view === 'ao-vivo' && (
+        {view === 'ao-vivo' && currency && (
           <AoVivo
             blocks={payload.blocks}
             today={today}
             lastUpdated={lastUpdated}
             refreshing={refreshing}
             onRefresh={handleRefresh}
+            currency={currency}
           />
         )}
-        {view === 'historico' && <Historico aggregated={payload.aggregated} />}
-        {view === 'configuracao' && theme && (
-          <Configuracao currentTheme={theme} onThemeChange={handleThemeChange} />
+        {view === 'historico' && currency && (
+          <Historico aggregated={payload.aggregated} currency={currency} />
+        )}
+        {view === 'configuracao' && theme && currency && (
+          <Configuracao
+            currentTheme={theme}
+            onThemeChange={handleThemeChange}
+            currency={currency}
+            onCurrencyChange={handleCurrencyChange}
+          />
         )}
       </div>
     </div>

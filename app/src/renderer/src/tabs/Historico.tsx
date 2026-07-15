@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import type { CSSProperties, JSX } from 'react';
-import type { AggregatedUsage, UsageBucket } from '../../../shared/types';
+import type { AggregatedUsage, CurrencySettings, UsageBucket } from '../../../shared/types';
+import { formatCost } from '../currency';
 
 function formatNumber(n: number): string {
   return n.toLocaleString('pt-BR');
-}
-
-function formatCost(n: number): string {
-  return `US$ ${n.toFixed(2)}`;
 }
 
 function formatWeekLabel(mondayKey: string): string {
@@ -29,7 +26,15 @@ function formatMonthLabel(monthKey: string): string {
   return `${MONTH_NAMES[Number(month) - 1]}/${year}`;
 }
 
-function CardList({ title, rows }: { title: string; rows: [string, UsageBucket][] }): JSX.Element {
+function CardList({
+  title,
+  rows,
+  currency,
+}: {
+  title: string;
+  rows: [string, UsageBucket][];
+  currency: CurrencySettings;
+}): JSX.Element {
   return (
     <section>
       <h2>{title}</h2>
@@ -38,7 +43,7 @@ function CardList({ title, rows }: { title: string; rows: [string, UsageBucket][
           <div key={key} style={{ background: 'var(--theme-card-bg)', borderRadius: 8, padding: '10px 12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
               <strong>{key}</strong>
-              <span style={{ color: '#4f9eff', fontWeight: 'bold' }}>{formatCost(bucket.cost)}</span>
+              <span style={{ color: '#4f9eff', fontWeight: 'bold' }}>{formatCost(bucket.cost, currency)}</span>
             </div>
             <div
               style={{
@@ -77,7 +82,13 @@ function pillStyle(active: boolean, disabled: boolean): CSSProperties {
 
 type Granularity = 'dia' | 'semana' | 'mensal';
 
-export function Historico({ aggregated }: { aggregated: AggregatedUsage }): JSX.Element {
+export function Historico({
+  aggregated,
+  currency,
+}: {
+  aggregated: AggregatedUsage;
+  currency: CurrencySettings;
+}): JSX.Element {
   const [granularity, setGranularity] = useState<Granularity>('dia');
 
   const byDayRows = Object.entries(aggregated.byDay).sort(([a], [b]) => a.localeCompare(b));
@@ -116,11 +127,11 @@ export function Historico({ aggregated }: { aggregated: AggregatedUsage }): JSX.
         </button>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px 12px' }}>
-        {granularity === 'dia' && <CardList title="Por dia" rows={byDayRows} />}
-        {granularity === 'semana' && <CardList title="Por semana" rows={byWeekRows} />}
-        {granularity === 'mensal' && <CardList title="Por mês" rows={byMonthRows} />}
-        <CardList title="Por modelo" rows={byModelRows} />
-        <CardList title="Por projeto" rows={byProjectRows} />
+        {granularity === 'dia' && <CardList title="Por dia" rows={byDayRows} currency={currency} />}
+        {granularity === 'semana' && <CardList title="Por semana" rows={byWeekRows} currency={currency} />}
+        {granularity === 'mensal' && <CardList title="Por mês" rows={byMonthRows} currency={currency} />}
+        <CardList title="Por modelo" rows={byModelRows} currency={currency} />
+        <CardList title="Por projeto" rows={byProjectRows} currency={currency} />
       </div>
     </div>
   );

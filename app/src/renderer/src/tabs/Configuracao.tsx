@@ -1,5 +1,5 @@
 import type { CSSProperties, JSX } from 'react';
-import type { SavedTheme, ThemeColors } from '../../../shared/types';
+import type { CurrencySettings, SavedTheme, ThemeColors } from '../../../shared/types';
 import { THEME_PRESETS } from '../themes';
 
 function swatchButtonStyle(active: boolean): CSSProperties {
@@ -45,14 +45,31 @@ function colorRowStyle(): CSSProperties {
   };
 }
 
+function currencyButtonStyle(active: boolean): CSSProperties {
+  return {
+    fontSize: 12,
+    padding: '6px 14px',
+    borderRadius: 12,
+    border: 'none',
+    background: active ? '#4f9eff' : 'var(--theme-card-bg)',
+    color: active ? '#fff' : '#999',
+    cursor: 'pointer',
+  };
+}
+
 export function Configuracao({
   currentTheme,
   onThemeChange,
+  currency,
+  onCurrencyChange,
 }: {
   currentTheme: SavedTheme;
   onThemeChange: (theme: SavedTheme) => void;
+  currency: CurrencySettings;
+  onCurrencyChange: (selected: CurrencySettings['selected']) => void;
 }): JSX.Element {
   const isCustom = currentTheme.preset === 'personalizado';
+  const rateUnavailable = currency.selected === 'brl' && currency.rate === null;
 
   function updateCustomColor(key: keyof ThemeColors, value: string): void {
     onThemeChange({ preset: 'personalizado', colors: { ...currentTheme.colors, [key]: value } });
@@ -108,6 +125,29 @@ export function Configuracao({
             />
           </label>
         </div>
+      )}
+
+      <h2 style={{ fontSize: 13, marginTop: 20, marginBottom: 10 }}>Moeda</h2>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          onClick={() => onCurrencyChange('usd')}
+          disabled={currency.selected === 'usd'}
+          style={currencyButtonStyle(currency.selected === 'usd')}
+        >
+          Dólar (US$)
+        </button>
+        <button
+          onClick={() => onCurrencyChange('brl')}
+          disabled={currency.selected === 'brl'}
+          style={currencyButtonStyle(currency.selected === 'brl')}
+        >
+          Real (R$)
+        </button>
+      </div>
+      {rateUnavailable && (
+        <p style={{ fontSize: 11, color: '#999', marginTop: 8 }}>
+          Cotação indisponível no momento — exibindo em US$ até conseguir buscar.
+        </p>
       )}
     </div>
   );
