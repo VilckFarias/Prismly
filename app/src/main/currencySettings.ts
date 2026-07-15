@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import electron from 'electron';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { CurrencySettings } from '../shared/types';
@@ -12,7 +12,7 @@ const DEFAULT_CURRENCY: CurrencySettings = {
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 function getCurrencyFilePath(): string {
-  return join(app.getPath('userData'), 'currency.json');
+  return join(electron.app.getPath('userData'), 'currency.json');
 }
 
 export function saveCurrencySettings(settings: CurrencySettings): void {
@@ -38,13 +38,18 @@ export function loadCurrencySettings(): CurrencySettings {
   }
 }
 
-export async function refreshExchangeRateIfNeeded(): Promise<void> {
-  const current = loadCurrencySettings();
-  const shouldFetch =
+export function shouldFetchExchangeRate(current: CurrencySettings, now: number = Date.now()): boolean {
+  return (
     current.rate === null ||
     current.fetchedAt === null ||
-    Date.now() - new Date(current.fetchedAt).getTime() > ONE_DAY_MS;
-  if (!shouldFetch) return;
+    Number.isNaN(Date.parse(current.fetchedAt)) ||
+    now - new Date(current.fetchedAt).getTime() > ONE_DAY_MS
+  );
+}
+
+export async function refreshExchangeRateIfNeeded(): Promise<void> {
+  const current = loadCurrencySettings();
+  if (!shouldFetchExchangeRate(current)) return;
 
   try {
     const response = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL');
