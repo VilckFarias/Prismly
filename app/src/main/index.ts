@@ -7,7 +7,8 @@ import { startWatcher } from './watcher';
 import { createPopupWindow } from './popupWindow';
 import { createTray } from './tray';
 import { loadTheme, saveTheme } from './themeSettings';
-import type { SavedTheme, UsagePayload } from '../shared/types';
+import { loadCurrencySettings, refreshExchangeRateIfNeeded, saveCurrencySettings } from './currencySettings';
+import type { CurrencySettings, SavedTheme, UsagePayload } from '../shared/types';
 
 function buildPayload(): UsagePayload {
   const records = collectClaudeUsage().map((record) => ({
@@ -54,5 +55,14 @@ app.whenReady().then(() => {
 
   ipcMain.on('theme:set', (_event, theme: SavedTheme) => {
     saveTheme(theme);
+  });
+
+  void refreshExchangeRateIfNeeded();
+
+  ipcMain.handle('currency:get', () => loadCurrencySettings());
+
+  ipcMain.on('currency:set', (_event, selected: CurrencySettings['selected']) => {
+    const current = loadCurrencySettings();
+    saveCurrencySettings({ ...current, selected });
   });
 });

@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { SavedTheme, UsagePayload } from '../shared/types';
+import type { CurrencySettings, SavedTheme, UsagePayload } from '../shared/types';
 
 contextBridge.exposeInMainWorld('prismly', {
   onUsageUpdate(callback: (payload: UsagePayload) => void): () => void {
@@ -19,5 +19,11 @@ contextBridge.exposeInMainWorld('prismly', {
   },
   setTheme(theme: SavedTheme): void {
     ipcRenderer.send('theme:set', theme);
+  },
+  getCurrency(): Promise<CurrencySettings> {
+    return ipcRenderer.invoke('currency:get');
+  },
+  setCurrency(selected: CurrencySettings['selected']): void {
+    ipcRenderer.send('currency:set', selected);
   },
 });

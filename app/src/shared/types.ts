@@ -17,3 +17,9 @@ export interface SavedTheme {
   preset: string;
   colors: ThemeColors;
 }
+
+export interface CurrencySettings {
+  selected: 'usd' | 'brl';
+  rate: number | null;
+  fetchedAt: string | null;
+}
