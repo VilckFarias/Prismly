@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { collectClaudeUsage } from './core/adapters/claude.ts';
 import { calculateCost } from './core/pricing.ts';
 import { aggregateUsage } from './core/aggregator.ts';

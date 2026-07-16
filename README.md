@@ -1,6 +1,6 @@
 # Prismly
 
-Ferramenta que lê os logs locais de uso de assistentes de IA de código (começando pelo Claude Code) e calcula tokens consumidos e custo em dólar ou real. Inspirada no [ccusage](https://github.com/ryoppippi/ccusage), mas com código 100% autoral — não é fork nem depende do pacote `ccusage`.
+Ferramenta que lê os logs locais de uso de assistentes de IA de código (começando pelo Claude Code) e calcula tokens consumidos e custo em dólar ou real.
 
 Roda como um ícone na bandeja do sistema (Windows, com suporte planejado a Linux), com três abas:
 
@@ -10,7 +10,13 @@ Roda como um ícone na bandeja do sistema (Windows, com suporte planejado a Linu
 
 ## Baixar e usar
 
-O app empacotado (instalador do Windows) fica disponível na aba [Releases](https://github.com/VilckFarias/Prismly/releases) deste repositório.
+**Modo terminal (relatório rápido, sem instalar nada):**
+
+```bash
+npx prismly
+```
+
+**App de bandeja (gráfico):** o instalador do Windows fica disponível na aba [Releases](https://github.com/VilckFarias/Prismly/releases) deste repositório.
 
 ## Desenvolvimento
 

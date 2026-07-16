@@ -4,6 +4,17 @@
   "description": "Reads local AI coding assistant usage logs and computes token usage/cost.",
   "type": "module",
   "main": "index.ts",
+  "bin": {
+    "prismly": "./index.ts"
+  },
+  "files": [
+    "index.ts",
+    "core",
+    "!core/**/*.test.ts"
+  ],
+  "engines": {
+    "node": ">=22.6.0"
+  },
   "scripts": {
     "start": "node index.ts",
     "test": "node --test core/**/*.test.ts",
