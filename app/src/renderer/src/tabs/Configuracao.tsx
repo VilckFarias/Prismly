@@ -209,7 +209,7 @@ export function Configuracao({
         <>
           <h2 style={{ fontSize: 13, marginBottom: 10 }}>Janela</h2>
           <div style={toggleRowStyle()}>
-            Sempre no topo
+            Manter em primeiro plano
             <button
               onClick={() => onAlwaysOnTopChange(!windowSettings.alwaysOnTop)}
               style={toggleButtonStyle(windowSettings.alwaysOnTop)}
