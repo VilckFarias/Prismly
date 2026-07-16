@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { CSSProperties, JSX } from 'react';
-import type { CurrencySettings, SavedTheme, UsageBucket, UsagePayload } from '../../shared/types';
+import type { CurrencySettings, SavedTheme, UsageBucket, UsagePayload, WindowSettings } from '../../shared/types';
 import { Historico } from './tabs/Historico';
 import { AoVivo } from './tabs/AoVivo';
 import { Configuracao } from './tabs/Configuracao';
@@ -55,6 +55,7 @@ export function App(): JSX.Element {
   const [refreshing, setRefreshing] = useState(false);
   const [theme, setThemeState] = useState<SavedTheme | null>(null);
   const [currency, setCurrencyState] = useState<CurrencySettings | null>(null);
+  const [windowSettings, setWindowSettingsState] = useState<WindowSettings | null>(null);
 
   useEffect(() => {
     return window.prismly.onUsageUpdate((newPayload) => {
@@ -77,6 +78,12 @@ export function App(): JSX.Element {
     });
   }, []);
 
+  useEffect(() => {
+    window.prismly.getWindowSettings().then((savedWindowSettings) => {
+      setWindowSettingsState(savedWindowSettings);
+    });
+  }, []);
+
   const handleRefresh = (): void => {
     setRefreshing(true);
     window.prismly.refresh();
@@ -92,6 +99,11 @@ export function App(): JSX.Element {
     if (!currency) return;
     window.prismly.setCurrency(selected);
     setCurrencyState({ ...currency, selected });
+  };
+
+  const handleAlwaysOnTopChange = (value: boolean): void => {
+    window.prismly.setAlwaysOnTop(value);
+    setWindowSettingsState({ alwaysOnTop: value });
   };
 
   if (!payload) {
@@ -156,12 +168,14 @@ export function App(): JSX.Element {
         {view === 'historico' && currency && (
           <Historico aggregated={payload.aggregated} currency={currency} />
         )}
-        {view === 'configuracao' && theme && currency && (
+        {view === 'configuracao' && theme && currency && windowSettings && (
           <Configuracao
             currentTheme={theme}
             onThemeChange={handleThemeChange}
             currency={currency}
             onCurrencyChange={handleCurrencyChange}
+            windowSettings={windowSettings}
+            onAlwaysOnTopChange={handleAlwaysOnTopChange}
           />
         )}
       </div>
