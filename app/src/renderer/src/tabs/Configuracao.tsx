@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import type { CSSProperties, JSX } from 'react';
-import type { CurrencySettings, SavedTheme, ThemeColors } from '../../../shared/types';
+import type { CurrencySettings, SavedTheme, ThemeColors, WindowSettings } from '../../../shared/types';
 import { THEME_PRESETS } from '../themes';
 
 function swatchButtonStyle(active: boolean): CSSProperties {
@@ -57,17 +58,58 @@ function currencyButtonStyle(active: boolean): CSSProperties {
   };
 }
 
+type SubView = 'aparencia' | 'comportamento';
+
+function subNavButtonStyle(active: boolean): CSSProperties {
+  return {
+    fontSize: 12,
+    padding: '5px 12px',
+    borderRadius: 12,
+    border: 'none',
+    background: active ? '#4f9eff' : 'var(--theme-card-bg)',
+    color: active ? '#fff' : '#999',
+    cursor: 'pointer',
+  };
+}
+
+function toggleRowStyle(): CSSProperties {
+  return {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    fontSize: 12,
+    color: '#ccc',
+  };
+}
+
+function toggleButtonStyle(active: boolean): CSSProperties {
+  return {
+    fontSize: 12,
+    padding: '5px 12px',
+    borderRadius: 12,
+    border: 'none',
+    background: active ? '#4f9eff' : 'var(--theme-card-bg)',
+    color: active ? '#fff' : '#999',
+    cursor: 'pointer',
+  };
+}
+
 export function Configuracao({
   currentTheme,
   onThemeChange,
   currency,
   onCurrencyChange,
+  windowSettings,
+  onAlwaysOnTopChange,
 }: {
   currentTheme: SavedTheme;
   onThemeChange: (theme: SavedTheme) => void;
   currency: CurrencySettings;
   onCurrencyChange: (selected: CurrencySettings['selected']) => void;
+  windowSettings: WindowSettings;
+  onAlwaysOnTopChange: (value: boolean) => void;
 }): JSX.Element {
+  const [subView, setSubView] = useState<SubView>('aparencia');
   const isCustom = currentTheme.preset === 'personalizado';
   const rateUnavailable = currency.selected === 'brl' && currency.rate === null;
 
@@ -77,77 +119,105 @@ export function Configuracao({
 
   return (
     <div style={{ padding: 12, overflowY: 'auto', flex: 1 }}>
-      <h2 style={{ fontSize: 13, marginBottom: 10 }}>Tema</h2>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-        {THEME_PRESETS.map((preset) => (
-          <button
-            key={preset.name}
-            onClick={() => onThemeChange({ preset: preset.name, colors: preset.colors })}
-            style={swatchButtonStyle(currentTheme.preset === preset.name)}
-          >
-            <Preview colors={preset.colors} />
-            <span style={{ fontSize: 11, color: '#ccc' }}>{preset.label}</span>
-          </button>
-        ))}
-        <button
-          onClick={() => onThemeChange({ preset: 'personalizado', colors: currentTheme.colors })}
-          style={swatchButtonStyle(isCustom)}
-        >
-          <Preview colors={currentTheme.colors} />
-          <span style={{ fontSize: 11, color: '#ccc' }}>Personalizado</span>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <button onClick={() => setSubView('aparencia')} style={subNavButtonStyle(subView === 'aparencia')}>
+          Aparência
+        </button>
+        <button onClick={() => setSubView('comportamento')} style={subNavButtonStyle(subView === 'comportamento')}>
+          Comportamento
         </button>
       </div>
 
-      {isCustom && (
-        <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <label style={colorRowStyle()}>
-            Fundo da tela
-            <input
-              type="color"
-              value={currentTheme.colors.bg}
-              onChange={(e) => updateCustomColor('bg', e.target.value)}
-            />
-          </label>
-          <label style={colorRowStyle()}>
-            Texto
-            <input
-              type="color"
-              value={currentTheme.colors.text}
-              onChange={(e) => updateCustomColor('text', e.target.value)}
-            />
-          </label>
-          <label style={colorRowStyle()}>
-            Fundo dos cards
-            <input
-              type="color"
-              value={currentTheme.colors.cardBg}
-              onChange={(e) => updateCustomColor('cardBg', e.target.value)}
-            />
-          </label>
-        </div>
+      {subView === 'aparencia' && (
+        <>
+          <h2 style={{ fontSize: 13, marginBottom: 10 }}>Tema</h2>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {THEME_PRESETS.map((preset) => (
+              <button
+                key={preset.name}
+                onClick={() => onThemeChange({ preset: preset.name, colors: preset.colors })}
+                style={swatchButtonStyle(currentTheme.preset === preset.name)}
+              >
+                <Preview colors={preset.colors} />
+                <span style={{ fontSize: 11, color: '#ccc' }}>{preset.label}</span>
+              </button>
+            ))}
+            <button
+              onClick={() => onThemeChange({ preset: 'personalizado', colors: currentTheme.colors })}
+              style={swatchButtonStyle(isCustom)}
+            >
+              <Preview colors={currentTheme.colors} />
+              <span style={{ fontSize: 11, color: '#ccc' }}>Personalizado</span>
+            </button>
+          </div>
+
+          {isCustom && (
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <label style={colorRowStyle()}>
+                Fundo da tela
+                <input
+                  type="color"
+                  value={currentTheme.colors.bg}
+                  onChange={(e) => updateCustomColor('bg', e.target.value)}
+                />
+              </label>
+              <label style={colorRowStyle()}>
+                Texto
+                <input
+                  type="color"
+                  value={currentTheme.colors.text}
+                  onChange={(e) => updateCustomColor('text', e.target.value)}
+                />
+              </label>
+              <label style={colorRowStyle()}>
+                Fundo dos cards
+                <input
+                  type="color"
+                  value={currentTheme.colors.cardBg}
+                  onChange={(e) => updateCustomColor('cardBg', e.target.value)}
+                />
+              </label>
+            </div>
+          )}
+
+          <h2 style={{ fontSize: 13, marginTop: 20, marginBottom: 10 }}>Moeda</h2>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => onCurrencyChange('usd')}
+              disabled={currency.selected === 'usd'}
+              style={currencyButtonStyle(currency.selected === 'usd')}
+            >
+              Dólar (US$)
+            </button>
+            <button
+              onClick={() => onCurrencyChange('brl')}
+              disabled={currency.selected === 'brl'}
+              style={currencyButtonStyle(currency.selected === 'brl')}
+            >
+              Real (R$)
+            </button>
+          </div>
+          {rateUnavailable && (
+            <p style={{ fontSize: 11, color: '#999', marginTop: 8 }}>
+              Cotação indisponível no momento — exibindo em US$ até conseguir buscar.
+            </p>
+          )}
+        </>
       )}
 
-      <h2 style={{ fontSize: 13, marginTop: 20, marginBottom: 10 }}>Moeda</h2>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button
-          onClick={() => onCurrencyChange('usd')}
-          disabled={currency.selected === 'usd'}
-          style={currencyButtonStyle(currency.selected === 'usd')}
-        >
-          Dólar (US$)
-        </button>
-        <button
-          onClick={() => onCurrencyChange('brl')}
-          disabled={currency.selected === 'brl'}
-          style={currencyButtonStyle(currency.selected === 'brl')}
-        >
-          Real (R$)
-        </button>
-      </div>
-      {rateUnavailable && (
-        <p style={{ fontSize: 11, color: '#999', marginTop: 8 }}>
-          Cotação indisponível no momento — exibindo em US$ até conseguir buscar.
-        </p>
+      {subView === 'comportamento' && (
+        <>
+          <h2 style={{ fontSize: 13, marginBottom: 10 }}>Janela</h2>
+          <div style={toggleRowStyle()}>
+            Manter em primeiro plano
+            <button
+              onClick={() => onAlwaysOnTopChange(!windowSettings.alwaysOnTop)}
+              style={toggleButtonStyle(windowSettings.alwaysOnTop)}
+            >
+              {windowSettings.alwaysOnTop ? 'Ligado' : 'Desligado'}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

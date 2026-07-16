@@ -1,6 +1,7 @@
 import { BrowserWindow } from 'electron';
 import { join } from 'node:path';
 import { loadGeometry, saveGeometry } from './popupGeometry';
+import { loadWindowSettings } from './windowSettings';
 
 export const POPUP_WIDTH = 380;
 export const POPUP_HEIGHT = 500;
@@ -11,6 +12,7 @@ const SAVE_GEOMETRY_DEBOUNCE_MS = 300;
 
 export function createPopupWindow(): BrowserWindow {
   const saved = loadGeometry();
+  const windowSettings = loadWindowSettings();
 
   const popupWindow = new BrowserWindow({
     width: saved?.width ?? POPUP_WIDTH,
@@ -21,6 +23,7 @@ export function createPopupWindow(): BrowserWindow {
     frame: false,
     resizable: true,
     skipTaskbar: true,
+    alwaysOnTop: windowSettings.alwaysOnTop,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,

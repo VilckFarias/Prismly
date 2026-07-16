@@ -1,4 +1,4 @@
-import type { CurrencySettings, SavedTheme, UsagePayload } from '../../shared/types';
+import type { CurrencySettings, SavedTheme, UsagePayload, WindowSettings } from '../../shared/types';
 
 declare global {
   interface Window {
@@ -10,6 +10,8 @@ declare global {
       setTheme(theme: SavedTheme): void;
       getCurrency(): Promise<CurrencySettings>;
       setCurrency(selected: CurrencySettings['selected']): void;
+      getWindowSettings(): Promise<WindowSettings>;
+      setAlwaysOnTop(value: boolean): void;
     };
   }
 }

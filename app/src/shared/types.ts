@@ -23,3 +23,7 @@ export interface CurrencySettings {
   rate: number | null;
   fetchedAt: string | null;
 }
+
+export interface WindowSettings {
+  alwaysOnTop: boolean;
+}
