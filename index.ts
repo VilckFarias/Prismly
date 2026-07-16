@@ -16,7 +16,7 @@ function toRows(
   groups: Record<string, UsageBucket>,
   keyLabel: string,
   sortBy?: 'key' | 'cost',
-): Record<string, string | number>[] {
+): { headers: string[]; rows: string[][] } {
   const entries = Object.entries(groups);
 
   if (sortBy === 'key') {
@@ -25,15 +25,45 @@ function toRows(
     entries.sort(([, a], [, b]) => b.cost - a.cost);
   }
 
-  return entries.map(([key, bucket]) => ({
-    [keyLabel]: key,
-    'Tokens entrada': formatNumber(bucket.inputTokens),
-    'Tokens saída': formatNumber(bucket.outputTokens),
-    'Cache escrita': formatNumber(bucket.cacheCreationTokens),
-    'Cache leitura': formatNumber(bucket.cacheReadTokens),
-    'Custo (USD)': formatCost(bucket.cost),
-    Registros: bucket.count,
-  }));
+  return {
+    headers: [keyLabel, 'Tokens entrada', 'Tokens saída', 'Cache escrita', 'Cache leitura', 'Custo (USD)', 'Registros'],
+    rows: entries.map(([key, bucket]) => [
+      key,
+      formatNumber(bucket.inputTokens),
+      formatNumber(bucket.outputTokens),
+      formatNumber(bucket.cacheCreationTokens),
+      formatNumber(bucket.cacheReadTokens),
+      formatCost(bucket.cost),
+      String(bucket.count),
+    ]),
+  };
+}
+
+// Desenha uma tabela em texto puro, sem depender de nenhuma biblioteca externa
+// (mantém o core/ com zero dependências em runtime). Convenção: a primeira
+// coluna (rótulo da linha) fica alinhada à esquerda, o resto à direita --
+// bate com o formato de todas as tabelas deste relatório (rótulo + números).
+function renderTable(headers: string[], rows: string[][]): string {
+  const widths = headers.map((header, col) =>
+    Math.max(header.length, ...rows.map((row) => row[col].length)),
+  );
+
+  function formatRow(cells: string[]): string {
+    const padded = cells.map((cell, col) => (col === 0 ? cell.padEnd(widths[col]) : cell.padStart(widths[col])));
+    return `│ ${padded.join(' │ ')} │`;
+  }
+
+  function border(left: string, mid: string, right: string): string {
+    return left + widths.map((w) => '─'.repeat(w + 2)).join(mid) + right;
+  }
+
+  return [
+    border('┌', '┬', '┐'),
+    formatRow(headers),
+    border('├', '┼', '┤'),
+    ...rows.map(formatRow),
+    border('└', '┴', '┘'),
+  ].join('\n');
 }
 
 function run(): void {
@@ -54,14 +84,17 @@ function run(): void {
   console.log(`Tokens de cache (escrita): ${formatNumber(totals.cacheCreationTokens)}`);
   console.log(`Tokens de cache (leitura): ${formatNumber(totals.cacheReadTokens)}`);
 
+  const byModelTable = toRows(byModel, 'Modelo');
   console.log('\n--- Por modelo ---');
-  console.table(toRows(byModel, 'Modelo'));
+  console.log(renderTable(byModelTable.headers, byModelTable.rows));
 
+  const byProjectTable = toRows(byProject, 'Projeto');
   console.log('\n--- Por projeto ---');
-  console.table(toRows(byProject, 'Projeto'));
+  console.log(renderTable(byProjectTable.headers, byProjectTable.rows));
 
+  const byDayTable = toRows(byDay, 'Dia', 'key');
   console.log('\n--- Por dia ---');
-  console.table(toRows(byDay, 'Dia', 'key'));
+  console.log(renderTable(byDayTable.headers, byDayTable.rows));
 }
 
 run();
