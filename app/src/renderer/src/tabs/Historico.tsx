@@ -91,12 +91,12 @@ export function Historico({
 }): JSX.Element {
   const [granularity, setGranularity] = useState<Granularity>('dia');
 
-  const byDayRows = Object.entries(aggregated.byDay).sort(([a], [b]) => a.localeCompare(b));
+  const byDayRows = Object.entries(aggregated.byDay).sort(([a], [b]) => b.localeCompare(a));
   const byWeekRows: [string, UsageBucket][] = Object.entries(aggregated.byWeek)
-    .sort(([a], [b]) => a.localeCompare(b))
+    .sort(([a], [b]) => b.localeCompare(a))
     .map(([key, bucket]) => [formatWeekLabel(key), bucket]);
   const byMonthRows: [string, UsageBucket][] = Object.entries(aggregated.byMonth)
-    .sort(([a], [b]) => a.localeCompare(b))
+    .sort(([a], [b]) => b.localeCompare(a))
     .map(([key, bucket]) => [formatMonthLabel(key), bucket]);
   const byModelRows = Object.entries(aggregated.byModel).sort(([, a], [, b]) => b.cost - a.cost);
   const byProjectRows = Object.entries(aggregated.byProject).sort(([, a], [, b]) => b.cost - a.cost);
