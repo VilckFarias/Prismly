@@ -37,6 +37,32 @@ test('agrupa por dia, modelo e projeto, e soma os totais', () => {
   assert.equal(totals.cost, 3);
 });
 
+test('byDay usa o dia civil local, não o dia UTC', () => {
+  const originalTz = process.env.TZ;
+  process.env.TZ = 'America/Sao_Paulo';
+
+  try {
+    // 23:30 UTC do dia 09 = 20:30 em São Paulo (UTC-3) -- ainda dia 09 local,
+    // mas seria um risco de virar dia 10 se o código folheasse pra UTC.
+    const sameLocalDay = [
+      makeRecord({ timestamp: '2026-07-09T23:30:00.000Z' }),
+      makeRecord({ timestamp: '2026-07-09T10:00:00.000Z', cost: 2 }),
+    ];
+    const { byDay: byDaySame } = aggregateUsage(sameLocalDay);
+    assert.deepEqual(Object.keys(byDaySame), ['2026-07-09']);
+    assert.equal(byDaySame['2026-07-09'].count, 2);
+
+    // 02:00 UTC do dia 10 = 23:00 em São Paulo do dia 09 -- deve cair no
+    // bucket local do dia 09, não do dia 10 (que é o que o UTC diria).
+    const stillPreviousLocalDay = [makeRecord({ timestamp: '2026-07-10T02:00:00.000Z' })];
+    const { byDay: byDayLate } = aggregateUsage(stillPreviousLocalDay);
+    assert.deepEqual(Object.keys(byDayLate), ['2026-07-09']);
+  } finally {
+    if (originalTz === undefined) delete process.env.TZ;
+    else process.env.TZ = originalTz;
+  }
+});
+
 test('agrupa registros da mesma semana no mesmo bucket, mesmo em meses diferentes', () => {
   const records = [
     makeRecord({ timestamp: '2026-06-29T10:00:00.000Z' }), // segunda-feira

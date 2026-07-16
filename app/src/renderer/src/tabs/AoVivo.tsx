@@ -44,7 +44,15 @@ export function AoVivo({ blocks, today, lastUpdated, refreshing, onRefresh, curr
       {activeBlock ? (
         <>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
-            <strong style={{ fontSize: 14 }}>Sessão atual</strong>
+            <span style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+              <strong style={{ fontSize: 14 }}>Sessão atual</strong>
+              <span
+                title="O bloco de 5h começa a contar a partir do início da hora cheia em que você usou o Claude Code pela primeira vez, não do minuto exato — por isso a barra pode já nascer parcialmente preenchida."
+                style={{ cursor: 'help', fontSize: 11, color: '#777' }}
+              >
+                ⓘ
+              </span>
+            </span>
             <span style={{ fontSize: 11, color: '#999' }}>reinicia em {formatRemaining(activeBlock.end)}</span>
           </div>
           <div style={{ background: '#333', borderRadius: 5, height: 8, marginBottom: 8 }}>
