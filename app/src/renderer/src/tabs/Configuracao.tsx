@@ -82,6 +82,18 @@ function toggleRowStyle(): CSSProperties {
   };
 }
 
+function toggleButtonStyle(active: boolean): CSSProperties {
+  return {
+    fontSize: 12,
+    padding: '5px 12px',
+    borderRadius: 12,
+    border: 'none',
+    background: active ? '#4f9eff' : 'var(--theme-card-bg)',
+    color: active ? '#fff' : '#999',
+    cursor: 'pointer',
+  };
+}
+
 export function Configuracao({
   currentTheme,
   onThemeChange,
@@ -196,14 +208,15 @@ export function Configuracao({
       {subView === 'comportamento' && (
         <>
           <h2 style={{ fontSize: 13, marginBottom: 10 }}>Janela</h2>
-          <label style={toggleRowStyle()}>
+          <div style={toggleRowStyle()}>
             Sempre no topo
-            <input
-              type="checkbox"
-              checked={windowSettings.alwaysOnTop}
-              onChange={(e) => onAlwaysOnTopChange(e.target.checked)}
-            />
-          </label>
+            <button
+              onClick={() => onAlwaysOnTopChange(!windowSettings.alwaysOnTop)}
+              style={toggleButtonStyle(windowSettings.alwaysOnTop)}
+            >
+              {windowSettings.alwaysOnTop ? 'Ligado' : 'Desligado'}
+            </button>
+          </div>
         </>
       )}
     </div>
