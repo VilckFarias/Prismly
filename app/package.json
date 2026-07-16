@@ -4,6 +4,7 @@
   "description": "Bandeja do sistema com uso e custo de assistentes de IA de código, começando pelo Claude Code.",
   "main": "./out/main/index.js",
   "author": "Vilck Farias",
+  "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
