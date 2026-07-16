@@ -13,7 +13,7 @@ Roda como um ícone na bandeja do sistema (Windows, com suporte planejado a Linu
 **Modo terminal (relatório rápido, sem instalar nada):**
 
 ```bash
-npx prismly
+npx prismly-cli
 ```
 
 **App de bandeja (gráfico):** o instalador do Windows fica disponível na aba [Releases](https://github.com/VilckFarias/Prismly/releases) deste repositório.
