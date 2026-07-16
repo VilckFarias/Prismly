@@ -8,6 +8,7 @@ import { createPopupWindow } from './popupWindow';
 import { createTray } from './tray';
 import { loadTheme, saveTheme } from './themeSettings';
 import { loadCurrencySettings, refreshExchangeRateIfNeeded, saveCurrencySettings } from './currencySettings';
+import { loadWindowSettings, saveWindowSettings } from './windowSettings';
 import type { CurrencySettings, SavedTheme, UsagePayload } from '../shared/types';
 
 function buildPayload(): UsagePayload {
@@ -64,5 +65,12 @@ app.whenReady().then(() => {
   ipcMain.on('currency:set', (_event, selected: CurrencySettings['selected']) => {
     const current = loadCurrencySettings();
     saveCurrencySettings({ ...current, selected });
+  });
+
+  ipcMain.handle('window:getSettings', () => loadWindowSettings());
+
+  ipcMain.on('window:setAlwaysOnTop', (_event, alwaysOnTop: boolean) => {
+    saveWindowSettings({ alwaysOnTop });
+    popupWindow?.setAlwaysOnTop(alwaysOnTop);
   });
 });
