@@ -1,16 +1,14 @@
 {
   "name": "prismly-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reads local AI coding assistant usage logs and computes token usage/cost.",
   "type": "module",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "bin": {
-    "prismly": "index.ts"
+    "prismly": "dist/index.js"
   },
   "files": [
-    "index.ts",
-    "core",
-    "!core/**/*.test.ts"
+    "dist"
   ],
   "engines": {
     "node": ">=22.6.0"
@@ -18,11 +16,14 @@
   "scripts": {
     "start": "node index.ts",
     "test": "node --test core/**/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "esbuild index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:node:*",
+    "prepublishOnly": "npm run build"
   },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "esbuild": "^0.28.1",
     "typescript": "^5.7.0"
   }
 }
