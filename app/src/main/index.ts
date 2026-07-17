@@ -3,7 +3,7 @@ import { collectClaudeUsage } from '../../../core/adapters/claude';
 import { calculateCost } from '../../../core/pricing';
 import { aggregateUsage } from '../../../core/aggregator';
 import { computeBlocks } from '../../../core/blocks';
-import { startWatcher } from './watcher';
+import { startWatcher } from '../../../core/watcher';
 import { createPopupWindow } from './popupWindow';
 import { createTray } from './tray';
 import { loadTheme, saveTheme } from './themeSettings';
