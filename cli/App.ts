@@ -6,7 +6,7 @@ import { aggregateUsage } from '../core/aggregator.ts';
 import { computeBlocks } from '../core/blocks.ts';
 import { startWatcher } from '../core/watcher.ts';
 import type { AggregatedUsage, SessionBlock } from '../core/types.ts';
-import { LOGO } from './logo.ts';
+import { LogoView } from './LogoView.ts';
 import { TABS, tabLabel, nextTab, HISTORICO_VIEWS, nextHistoricoView, prevHistoricoView } from './keybindings.ts';
 import type { NavState } from './keybindings.ts';
 import { AoVivo } from './tabs/AoVivo.ts';
@@ -55,7 +55,7 @@ function App(): React.ReactElement {
   return React.createElement(
     Box,
     { flexDirection: 'column' },
-    React.createElement(Text, null, LOGO),
+    React.createElement(LogoView, null),
     React.createElement(Text, { dimColor: true }, 'Prismly — uso e custo do Claude Code'),
     React.createElement(
       Box,
