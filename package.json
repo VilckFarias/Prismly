@@ -17,7 +17,7 @@
     "start": "node index.ts",
     "test": "node --test core/**/*.test.ts cli/**/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "build": "esbuild index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:node:*",
+    "build": "esbuild index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:node:* --external:ink --external:react",
     "prepublishOnly": "npm run build"
   },
   "license": "MIT",
