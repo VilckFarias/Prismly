@@ -1,6 +1,6 @@
 {
   "name": "prismly-cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Reads local AI coding assistant usage logs and computes token usage/cost.",
   "type": "module",
   "main": "dist/index.js",
