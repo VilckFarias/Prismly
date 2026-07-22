@@ -1,8 +1,10 @@
 # Prismly
 
+[![CI](https://github.com/VilckFarias/Prismly/actions/workflows/ci.yml/badge.svg)](https://github.com/VilckFarias/Prismly/actions/workflows/ci.yml)
+
 Ferramenta que lê os logs locais de uso de assistentes de IA de código (começando pelo Claude Code) e calcula tokens consumidos e custo em dólar ou real.
 
-Roda como um ícone na bandeja do sistema (Windows, com suporte planejado a Linux), com três abas:
+Roda como um ícone na bandeja do sistema (Windows e Linux), com três abas:
 
 - **Ao vivo** — o bloco de sessão de 5h em andamento, com barra de progresso e contagem regressiva.
 - **Histórico** — uso agregado por dia, semana, mês, modelo e projeto (mais recente primeiro).
@@ -34,6 +36,8 @@ Duas partes independentes:
   ```
 
 - **`app/`** — o app Electron (bandeja do sistema). Dependências próprias, isoladas de `core/`. Veja [`app/README.md`](app/README.md) para instruções de desenvolvimento, build e notas específicas de Linux.
+
+Quer contribuir? Veja [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Licença
 
