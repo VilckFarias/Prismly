@@ -1,6 +1,6 @@
 {
   "name": "prismly-cli",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Reads local AI coding assistant usage logs and computes token usage/cost, with an interactive terminal UI.",
   "keywords": [
     "claude-code",
