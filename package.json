@@ -32,8 +32,8 @@
     "node": ">=22.6.0"
   },
   "scripts": {
-    "start": "node index.ts",
-    "test": "node --test core/**/*.test.ts cli/**/*.test.ts",
+    "start": "node --experimental-strip-types index.ts",
+    "test": "node --experimental-strip-types --test core/**/*.test.ts cli/**/*.test.ts",
     "typecheck": "tsc --noEmit",
     "build": "esbuild index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:node:* --external:ink --external:react",
     "prepublishOnly": "npm run build"
