@@ -1,6 +1,8 @@
 # Prismly
 
 [![CI](https://github.com/VilckFarias/Prismly/actions/workflows/ci.yml/badge.svg)](https://github.com/VilckFarias/Prismly/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/prismly-cli)](https://www.npmjs.com/package/prismly-cli)
+[![npm downloads](https://img.shields.io/npm/dm/prismly-cli)](https://www.npmjs.com/package/prismly-cli)
 
 Ferramenta que lê os logs locais de uso de assistentes de IA de código (começando pelo Claude Code) e calcula tokens consumidos e custo em dólar ou real.
 
